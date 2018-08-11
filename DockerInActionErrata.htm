@@ -1,0 +1,263 @@
+
+<!-- saved from url=(0122)https://manning-content.s3.amazonaws.com/download/3/8ec991d-b454-4b54-b375-3a2969ed37ba/Nickoloff_DockerinAction_err1.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>Manning Publications</title>
+    <style>
+      body {
+        font-size: 10pt;
+        margin: 1.5em;
+        background-color: #404040;
+        color: black;
+        font-family: Verdana,sans-serif;
+      }
+      h1 {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-top: 2em;
+      }
+      h2 {
+        font-size: 1.1em;
+        font-weight: bold;
+      }
+      fieldset {
+        width: 740px;
+        margin-bottom: 12px;
+        border: 2px #dddddd;
+        border-radius: 4px;
+        background-color: aliceblue;
+      }
+
+      fieldset div {
+        padding: 20px;
+        margin-bottom: 6px;
+        font-weight: normal;
+      }
+
+      legend {
+        border: 2px ridge #00457b;
+        font-size: 1.2em;
+        font-weight: bold;
+        background-color: darkorange;
+        color: black;
+        padding: 8px 16px;
+      }
+      dt.broken-example { font-weight: bold; color: #333;}
+
+    </style>
+  </head>
+  <body>
+    <fieldset>
+      <legend>Docker in Action Errata</legend>
+      <div id="intro">
+        <a href="https://www.manning.com/books/docker-in-action"><img id="cover" src="./DockerInActionErrata_files/Nickoloff-Docker-HI.png" width="150" height="188" alt="Docker in Action"></a>
+        <p>Thank you for purchasing <a href="https://www.manning.com/books/docker-in-action" target="_blank"><i>Docker in Action</i></a>. Please post any errors, other than those listed below, in the book's <a href="https://forums.manning.com/posts/list/37916.page" target="_blank">Author Online Forum</a>. We'll compile a comprehensive list and publish it here for everyone's convenience. Thank you!</p>
+        <h3>Last updated August 21, 2016</h3>
+        <dl>
+            <p>In an effort to offer continued support beyond publication, we have listed many updates to code due to version updates. </p>
+
+          <dt class="broken-example">[code - omission] Page 18</dt><dd>The command to start the "mailer" is missing a line. Where the book reads: 
+<pre>docker run -d \
+  --name mailer \</pre> the proper command should read: 
+<pre>docker run -d \
+  --name mailer \
+  dockerinaction/ch2_mailer</pre></dd>
+
+          <dt class="broken-example">[code - regression] Page 68</dt><dd>Newer versions of Docker have changed the structure of the JSON returned by the docker inspect subcommand. If the following command does not work then use the replacement. Original:<pre>docker inspect --format "{{json .Volumes}}" reader</pre> Replacement: <pre>docker inspect --format "{{json .Mounts}}" reader</pre></dd>
+
+          <dt class="broken-example">[code - regression] Page 69</dt><dd>Newer versions of Docker have changed the structure of the JSON returned by the docker inspect subcommand. If the following command does not work then use the replacement. Original:<pre>docker inspect --format "{{json .Volumes}}" student</pre> Replacement: <pre>docker inspect --format "{{json .Mounts}}" student</pre></dd>
+
+          <dt class="broken-example">[code - regression] Page 74</dt><dd>The alpine image entrypoint has changed since original publication and has been unset. The last command on the page should now read: <pre>docker run --rm \
+  --volumes-from tools \
+  --entrypoint /bin/sh \
+  alpine:latest \
+  -c 'ls /operations/*'</pre></dd>
+
+          <dt class="broken-example">[code - regression] Page 75</dt><dd>The docker exec example on the top of page 75 was printed with the wrong tool name. The correct command is: <pre>docker exec important_application /operations/tools/diagnostics</pre></dd>
+
+          <dt class="broken-example">[code - regression] Page 86</dt><dd>It appears that nslookup behavior in the alpine image has changed. To run the example use the busybox:1 image. <pre>docker run --rm \
+  --hostname barker \
+  busybox:1 \
+  nslookup barker</pre></dd>
+
+          <dt class="broken-example">[code - regression] Page 87 (top)</dt><dd>It appears that nslookup behavior in the alpine image has changed. To run the example use the busybox:1 image. <pre>docker run --rm \
+  --dns 8.8.8.8 \
+  busybox:1 \
+  nslookup docker.com</pre></dd>
+
+          <dt class="broken-example">[code - regression] Page 87 (bottom)</dt><dd>It appears that nslookup behavior in the alpine image has changed. To run the example use the busybox:1 image. <pre>docker run --rm \
+  --dns-search docker.com \
+  busybox:1 \
+  nslookup registry.hub</pre></dd>
+
+          <dt class="broken-example">[code - regression] Page 88 (bottom)</dt><dd>It appears that nslookup behavior in the alpine image has changed. To run the example use the busybox:1 image. <pre>docker run --rm \
+  --add-host test:10.10.10.255 \
+  busybox:1 \
+  nslookup test</pre></dd>
+
+          <dt class="broken-example">[code - regression] Page 106</dt><dd>There are a few new problems with this example. First, the named repository (dockerfile/mariadb) no longer exists. You can use mariadb:5.5 as  replacement. However, the second problem is that containers created from the mariadb image perform certain initialization at startup. That initialization work requires certain capabilities and to be started with the default user. The system should instead drop permissions after the initialization work is complete. Note that the real value of this example is in demonstrating different resource isolation mechanisms. It is not so important that you get it working. You can start the database with the following command: <pre>docker run -d --name ch6_mariadb \
+  --memory 256m \
+  --cpu-shares 1024 \
+  --cap-drop net_raw \
+  -e MYSQL_ROOT_PASSWORD=test \
+  mariadb:5.5</pre></dd>
+
+          <dt class="broken-example">[code - regression] Page 107</dt><dd>Containers created from the wordpress:4.1 image perform certain initialization at startup and expect certain environment variables. That initialization work requires certain capabilities and to be started with the default user. The system should instead drop permissions after the initialization work is complete. Note that the real value of this example is in demonstrating different resource isolation mechanisms. It is not so important that you get it working. You can start wordpress with the following command: <pre>docker run -d -P --name ch6_wordpress \
+  --memory 512m \
+  --cpu-shares 512 \
+  --cap-drop net_raw \
+  -e WORDPRESS_DB_PASSWORD=test \
+  mariadb:5.5</pre></dd>
+
+          <dt class="broken-example">[code - typo] Page 109</dt><dd>The device access example is missing the "run" subcommand. The command listed as: <pre>docker -it --rm \
+  --device /dev/video0:/dev/video0 \
+  ubuntu:latest ls -al /dev</pre> should have been written as: <pre>docker run -it --rm \
+  --device /dev/video0:/dev/video0 \
+  ubuntu:latest ls -al /dev</pre></dd>
+
+          <dt class="broken-example">[code - typo] Page 110 - 111</dt><dd>Several commands are missing the "run" subcommand. In each case the command begins with <pre>docker -d ...</pre> and should have been written as: <pre>docker run -d ...</pre></dd>
+
+          <dt class="broken-example">[code - regression] Page 115 (bottom)</dt><dd>The busybox and alpine images have been updated to fix the problem described in the paragraph below. The 'su' command does not have the SUID bit set and will not provide any automatic privilege escalation.<pre></pre></dd>
+
+          <dt class="broken-example">[command correction] Page 116</dt><dd>Boot2Docker has been discontinued and rolled into a newer project called Docker Machine. Because a reader is unlikely to have the boot2docker command installed, the command at the top of this page should be changed from: <pre>boot2docker ssh</pre> to the Docker Machine equivalent: <pre>docker-machine ssh default</pre> where default is the name of the machine you created.<pre></pre></dd>
+
+          <dt class="broken-example">[code - regression] Page 119</dt><dd>The ifconfig command has since been removed from ubuntu:latest. Instead of using the ubuntu:latest image for these examples use ubuntu:trusty. The example using ifconfig should look like: <pre>docker run --rm \
+  --privileged \
+  ubuntu:trusty ifconfig</pre></dd>
+
+          <dt class="broken-example">[Illustration Mistake] Page 136</dt><dd>Image layer ced2 on the left side of the illustration is listed at c3d2 on the right side. These two layers should represent the same item.<pre></pre></dd>
+
+          <dt class="broken-example">[code - typo] Page 140</dt><dd>Containers need not be in a running state in order to export their file system. The first command on page 140 uses the "run" subcommand but the command listed will never be able to start. Replace "run" with "create." The command should appear as follows: <pre>docker create --name export-test \
+  dockerinaction/ch7_packed:latest ./echo For Export</pre></dd>
+
+          <dt class="broken-example">[code - missing line] Page 146</dt><dd>In the example Dockerfile near the top of the page the line with the RUN directive is missing part of the instruction. That line should read: <pre>RUN apt-get update &amp;&amp; apt-get install -y git</pre></dd>
+
+          <dt class="broken-example">[code - evolution] Page 215</dt><dd>The registry:2 configuration file now requires the population of additional fields under "maintenance &gt; uploadpurging." The example should currently look like:
+<pre># Filename: s3-config.yml
+version: 0.1
+log:
+    level: debug
+    fields:
+        service: registry
+        environment: development
+storage:
+    cache:
+        layerinfo: inmemory
+    s3:
+        accesskey: <your awsacceskey="">
+        secretkey: <your awssecretkey="">
+        region: <your bucket="" region="">
+        bucket: <your bucket="" name="">
+        encrypt: true
+        secure: true
+        v4auth: true
+        chunksize: 5242880
+        rootdirectory: /s3/object/name/prefix
+    maintenance:
+        uploadpurging:
+            enabled: true
+            age: 168h
+            interval: 24h
+            dryrun: false
+        readonly:
+            enabled: false
+http:
+    addr: :5000
+    secret: asecretforlocaldevelopment
+    debug:
+        addr: localhost:5001</your></your></your></your></pre></dd>
+
+          <dt class="broken-example">[code - evolution] Page 216</dt><dd>The registry:2 configuration file now requires the population of additional fields under "maintenance &gt; uploadpurging." The example should currently look like:
+<pre># Filename: rados-config.yml
+version: 0.1
+log:
+    level: debug
+    fields:
+        service: registry
+        environment: development
+storage:
+    cache:
+        layerinfo: inmemory
+    rados:
+        poolname: radospool
+        username: radosuser
+        chunksize: 4194304
+    maintenance:
+        uploadpurging:
+            enabled: false
+            age: 168h
+            interval: 24h
+            dryrun: false
+        readonly:
+            enabled: false
+http:
+    addr: :5000
+    secret: asecretforlocaldevelopment
+    debug:
+        addr: localhost:5001</pre></dd>
+
+          <dt class="broken-example">[code - evolution] Page 218</dt><dd>The registry:2 configuration file now requires the population of additional fields under "maintenance &gt; uploadpurging." The example should currently look like:
+<pre># Filename: redis-config.yml
+version: 0.1
+log:
+    level: debug
+    fields:
+        service: registry
+        environment: development
+http:
+    addr: :5000
+    secret: asecretforlocaldevelopment
+    debug:
+        addr: localhost:5001
+storage:
+    cache:
+        blobdescriptor: redis
+    s3:
+        accesskey: <your awsacceskey="">
+        secretkey: <your awssecretkey="">
+        region: <your bucket="" region="">
+        bucket: <your bucket="" name="">
+        encrypt: true
+        secure: true
+        v4auth: true
+        chunksize: 5242880
+        rootdirectory: /s3/object/name/prefix
+    maintenance:
+        uploadpurging:
+            enabled: true
+            age: 168h
+            interval: 24h
+            dryrun: false
+        readonly:
+            enabled: false
+redis:
+    addr: redis-host:6379
+    password: asecret
+    dialtimeout: 10ms
+    readtimeout: 10ms
+    writetimeout: 10ms
+    pool:
+        maxidle: 16
+        maxactive: 64
+        idletimeout: 300s</your></your></your></your></pre></dd>
+
+          <dt class="broken-example">[code - typo] Page 220</dt><dd>The name of the file shown should be scalable-config.yml as in previous examples. This example also requires the addition of the newer uploadpurging attributes. The mainenance section of the file should be as follows:<pre>    maintenance:
+        uploadpurging:
+            enabled: true
+            age: 168h
+            interval: 24h
+            dryrun: false
+        readonly:
+            enabled: false</pre></dd>
+
+          <dt class="broken-example">[text - typo] Page 240</dt><dd>In the second paragraph the reader is instructed to, "Open ./coffee/api/api.py" this is not the correct location of the file. The correct file location is at, "./coffee/app/api.py."<pre></pre></dd>
+
+          <dt class="broken-example">[text - typo] Page 262</dt><dd>The refere nce to "flock.json" in the first sentence of the third paragraph should be "flock.yml."<pre></pre></dd>
+
+          <dt class="broken-example">[code - typo] Page 270</dt><dd>The git clone command uses the ssh protocol instead of https. The command should read as follows: <pre>git clone https://github.com/dockerinaction/ch12_coffee_api.git</pre></dd>
+        </dl>
+      </div>
+    </fieldset>
+  
+
+</body></html>
