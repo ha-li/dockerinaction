@@ -1,0 +1,46 @@
+docker allows you to get docker images in several ways
+
+1. pull from a docker registry like Docker Hub or your own registry
+      >docker pull busybox:latest
+      >docker run -it --rm busybox:latest
+
+      >docker pull quay.io/dockerinaction/ch3_hello_registry:latest
+      >docker run -it --rm quay.io/dockerinaction/ch3_hello_registry:latest
+
+2. you can also load/run the image from a file such as a tar file
+      >docker load -i yourimage.tar
+
+      eg to load/run busybox:latest from a tar, we can use the Docker Hub image by first
+      converting it to a tar file and then loading it that way.
+          1. pull the busybox:latest from Docker Hub
+          2. convert image to tar file
+          3. load/run the tar file
+
+          >docker images  -- see what images are local
+          >docker rmi busybox:latest  -- remove your busybox:latest images, then check to make sure it is gone (docker images)
+          >docker pull busybox:latest   -- pull latest image
+          >docker save -o busybox.tar busybox:latest -- save the pulled image as a tar
+          >docker rmi busybox   -- remove it (since you pulled it)
+          >docker load -i busybox.tar  --load the image
+          >docker images   -- you should see it now
+          >docker run -it --rm busybox:latest /bin/sh
+
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
