@@ -27,6 +27,17 @@ docker allows you to get docker images in several ways
 
 
 3. using Dockerfile (docker build/installation) along with your bundle of files
+     you can distribute a docker image via a Dockerfile and then build the image from the Dockerfile.
+     typically you distribute a Dockerfile along with your git repo
+
+     >git clone https://github.com/dockerinaction/ch3_dockerfile.git
+     >cd ch3_dockerfile
+     >docker build -t dia_ch3/dockerfile:latest .
+     >docker images (see what the image is)
+     >docker run -it --rm dia_ch3/dockerfile:latest
+     >docker rmi dia_ch3/dockerfile   (delete the image)
+
+
 
 
 
