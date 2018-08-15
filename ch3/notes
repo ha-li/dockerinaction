@@ -23,9 +23,10 @@ docker allows you to get docker images in several ways
           >docker rmi busybox   -- remove it (since you pulled it)
           >docker load -i busybox.tar  --load the image
           >docker images   -- you should see it now
-          >docker run -it --rm busybox:latest /bin/sh
+          >docker run -it --rm busybox:latest /bin/sh    (run the image)
 
-          
+
+3. using Dockerfile (docker build/installation) along with your bundle of files
 
 
 
