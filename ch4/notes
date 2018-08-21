@@ -1,0 +1,52 @@
+a volume is 
+ -a mount point on the container where a portion of the host file system has been mounted.
+
+without volumes, you are limited to working with the union file system of the image
+
+volumes provide a container-independent data storage
+
+
+2 types of volumes
+- docker-managed volumes
+- bind mount volumes
+
+Docker Managed Volumes
+-docker daemon creates the volume on a portion of the host file system that is reserved for docker
+   (typically /var/lib/docker/....)
+   
+   syntax of docker managed volumes
+      docker run -d -v CONTAINER_PATH alpine:latest 
+
+   the only parameter to -v is the path in the container where the volume is created, the
+   path on the host is managed by docker daemon
+
+Bind Mount Volume
+- are volumes that point to a user-specified location on the host file system
+      can be a file or a directory
+
+- used when 
+    host provides some file/directory that need to be mounted into the container
+    directory tree at some specific point
+
+    want to share data with other processes running outside a container (eg with a host system app/component)
+
+    want to share data on the host at some know location with processes/programs that run in a container
+    (eg you have a file on the host machine you want to share as a web page via apache running on a container, 
+     you could mount that host file/file system as a bind mount volume to the apache containers /usr/local/apache2/htdocs)
+
+    limitations of bind volumes:
+      -fixing the host mount point now makes an otherwise portable container not so portable
+      -fixed mount points may create conflict when multiple containers use the same mount point
+         if multiple database containers all used the same host mount point would lead to data corruption
+ 
+  syntax of bind mount volume:
+      docker run -d --name <containername> 
+         -v HOST_ABS_PATH:CONTAINER_ABS_PATH
+
+      eg docker run -d --name web -v ~/Documents/example:/usr/local/apache2/htdocs
+           -p 80:80 httpd:latest
+  
+      also have option of making it read-only via 
+           -v HOST_ABS_PATH:CONTAINER_ABS_PATH:ro
+
+   
