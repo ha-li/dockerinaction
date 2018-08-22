@@ -103,3 +103,61 @@ Volume Ownership
 
 -docker cannot delete bind mount volumes 
    
+
+Volume Container Pattern
+========================
+A Volume Container Pattern is one which a container does little more than provide a handle to volumes.
+ -is useful when you need to share a set of volumes with many containers
+
+-a volume container does not need to be running, because stopped containers will maintain a reference
+to their volumes
+- the stopped container becomes the source for a --volumes-from flag when creating another consumer
+  container
+-volume containers are important for keeping a handle on data in cases where a single container
+ should have exclusive access to somen data. 
+-The handle makes it possible to back up/restore/migrate data
+
+ for example, say you have a database software running in a container, and that container
+ references another volume container as its data, if you wanted to update the database you 
+ could shut down the container housing the software, and then start up a new container
+ with the upgraded database software, point it to the same volume container, and now your
+ data is immediately availabe.
+
+   when using volume containers, it is common practice to name the volume container with a vc_
+   another practice is to establish a common convention for mount points, like all logs mount at /logs
+
+Data-Packed Volume COntainers
+=============================
+This pattern uses a Volume Container to provide data, such as configuration data, pre-installed software
+to be shared, key material etc
+
+   docker run --name dpvc -v /config dockerinaction/ch4_packed /bin/sh -c 'cp /packed/* /config/'
+   docker run --rm --volumes-from dpvc alpine:latest ls /config
+   docker run --rm --volumes-from dpvc alpine:latest cat /config/packedData
+
+      the dpvc contains some data in /packed that we cp over to /config and then 
+      create a volume at /config 
+
+      the 2nd container uses dpvc as a volume container and runs an ls /config to show the files
+ 
+      the 3rd container uses dpvc as a volume container and runs cat on the file 
+
+Polymorphic Container Pattern
+=============================
+This pattern uses a container with a default functionality, for example it runs an application
+ at /app/app.jar on the container. By default, /app/app.jar does a simple functionality like
+ print out "Hello World"
+
+Then in a polymorphic image, you have your own application also called app.jar that
+ you mount as volume at /app/app.jar of the first container. this app.jar will do your
+ logic you want
+   
+Or you can create a container with certain tools, then attach other volumes with data
+ from your ops onto the tools container and use the tools to examine the ops data
+
+Another common use is one we discuss that is packed with configuration data that attaches
+to your application container, the configuration can be swapped out for another container so
+that instead of deploying apps to different environment, you attach different environments 
+to your app to mimic different environments.
+
+
