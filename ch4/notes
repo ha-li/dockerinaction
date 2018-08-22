@@ -11,6 +11,7 @@ volumes provide a container-independent data storage
 - bind mount volumes
 
 Docker Managed Volumes
+======================
 -docker daemon creates the volume on a portion of the host file system that is reserved for docker
    (typically /var/lib/docker/....)
    
@@ -21,6 +22,7 @@ Docker Managed Volumes
    path on the host is managed by docker daemon
 
 Bind Mount Volume
+=================
 - are volumes that point to a user-specified location on the host file system
       can be a file or a directory
 
@@ -49,4 +51,21 @@ Bind Mount Volume
       also have option of making it read-only via 
            -v HOST_ABS_PATH:CONTAINER_ABS_PATH:ro
 
+   
+Sharing Volumes
+===============
+-docker run command allows you to copy the volumes from other containers to the new container: --volumes-from
+-  --volumes-from can be set multiple source containers (one or more other containers)
+
+  eg: docker run --name fowler -v ~/examples:/var/lib/docker/library/poe -v /library alpine:latest echo Fowler Container
+      docker run --name knuth -v /library/k.vol1 -v /library/v.vol2 -v /library/l.vol3 alpine:latest echo Knuth Container
+      docker run --name aggregator --volumes-from fowler --volumes-from knuth alpine:latest ls /library/
+   
+- --volumes-from works with both docker managed volumes and bind mount volumes
+
+- --volumes-from is transitive, so you could add
+       docker run --name aggregate-consumer --volumes-from aggregator  alpine:latest consume
+       
+       and this container will inherit the same volumes as aggregator, which got its volumes from fowler and knuth
+-      
    
