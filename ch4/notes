@@ -91,4 +91,15 @@ Generalized sharing (-volumes-from flag)
      3. if you are inheriting from multiple containers that all map to the same location, this creates a race condition
      
      
+Volume Ownership
+-single container own each managed volume
+-when you clean up the container, you should also clean up the managed volume
+-any volume that is reference by other containers will be skipped during clean up, until the last container
+   internally, docker maintains a counter on each container managing a volume
+-to clean up a volume when you remove a container, you should use the -v flag
+   docker rm -vf $(docker ps -aq) 
+-if the last container is not cleaned up with a -v flag, then the volume remains, causing an ophan volume
+   orphan volume creates disk space that is unusable
+
+-docker cannot delete bind mount volumes 
    
