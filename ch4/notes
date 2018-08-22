@@ -67,5 +67,11 @@ Sharing Volumes
        docker run --name aggregate-consumer --volumes-from aggregator  alpine:latest consume
        
        and this container will inherit the same volumes as aggregator, which got its volumes from fowler and knuth
--      
+
+- you should not use volumes-from under three (3) scenario
+     1. if you need to change the permission of the volumes
+     2. if you need to remap the volume paths (volumes-from) does not allow remapping
+     3. if you are inheriting from multiple containers that all map to the same location, this creates a race condition
+     
+     
    
