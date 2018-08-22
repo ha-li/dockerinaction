@@ -54,6 +54,23 @@ Bind Mount Volume
    
 Sharing Volumes
 ===============
+-two ways to share volumes
+1. host dependent sharing
+2. generalized sharing and the volumes-from flag
+
+Host Dependent Sharing
+-two containers share a volume when both have a Bind Mount Volume that points to the same
+ file directory on the host
+
+  eg: mkdir ~/Logs
+      docker run --name pwriter -d -v ~/Logs:/data dockerinaction/ch4_writer_a
+      docker run --rm -v ~/Logs:/reader-data alpine:latest head /reader-data
+
+  both these containers bind the same host directory, but to different container directories
+  limitation is when you have many containers, Bind Mount Volume become hard to maintain.
+
+Generalized sharing (-volumes-from flag)
+
 -docker run command allows you to copy the volumes from other containers to the new container: --volumes-from
 -  --volumes-from can be set multiple source containers (one or more other containers)
 
