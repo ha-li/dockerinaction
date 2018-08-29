@@ -1,0 +1,73 @@
+Dockerfile 
+- is a set of instructions for building a docker image
+- instructions are read and processed from top to bottom
+- each instruction results in a new layer in the file image
+- to reduce the number of layers, multiple instructions are concatentated together using &&
+- building images via Dockerfiles simplifies tasks like adding/copying files to your image
+
+Docker build command:
+   > docker build --tag <image_name>:<tag> .
+
+   where . specifies the location of Dockerfile, when completed, running
+   > docker images
+
+   should reveal your new image <image_name>
+
+Comments inside the Dockerfile
+  - any line beginning with # is a comment
+
+Multiple copies of docker build files can be used. 
+
+Instructions (14 total) 
+FROM - tells docker to start with this image as the base image. This must be the first statement in any Dockerfile 
+       if starting from an empty image, then your first statement should be:
+          FROM scratch
+
+MAINTAINER - sets the maintainer name and email for the image being built 
+RUN - commands to run for creating the image, things like 
+       apt-get update && apt-get install -y git
+      by chaining together several commands you reduce the layers of the final image
+ENTRYPOINT - sets teh entrypoint to the image
+             there are 2 ways to set teh entry point, each has its nuances
+                1. ENTRYPOINT ["executable", "param1", "param2", ...] (exec way, preferred)
+                2. ENTRYPOINT command param1 param2 (shell form)
+
+            - the exec way is preferred. 
+                command line args to 'docker run <image>' will append all the arguments after <image> to the exec form, 
+                 eg docker run image -d   
+                will pass the -d to the entry point 
+
+            - the shell form will prevent CMD or run arguments from being used, 
+                 but the value of ENTRYPOINT will be started as a subcommand of /bin/sh -c, so no signals will be passed
+
+ENV - sets environment variables for an image (similar to --env flag on docker run/create)
+    - chain multiple environment variable settings together with && to keep the layer to 1, unless you want to set 2 layers
+    - when chaining, keep lines clean and easy to read by using \ at the end of each 
+    - environment variables declare like so are made available to the resulting image, but also 
+      can be used in the docker file after they are set
+
+LABEL - used to define key/value pairs that get saved as metadata for the image/container.
+      - you can see the metadata in a 'docker inspect' command
+      - chain multiple labels together using \ to keep it clean an minimize image layers
+      - use LABEL along with ENV to declare an image environment variable, as well as save to its label
+      - is similar to --label flag in docker run/create
+
+WORKDIR - sets the default working directory of the image/container
+        - sets teh working directory for any RUN|CMD|ENTRYPOINT|COPY|ADD instruction that follows in the dockerfile.
+        - if the WORKDIR does not exist, will create it
+
+EXPOSE - opens a TCP port
+
+USER - sets the user and group for all further build sets and containers created from the image 
+     - you only want to set the user in the top most level since setting it in a base/lower layer
+       will prevent downstream dockerfiles from installing software, which means that those dockerfiles
+       would need to flip user back and forth, creating additional layers. Instead, the right pattern
+       would be to create users/groups in base layer as part of RUN command, and then only
+       set the default user in the top most docker file
+
+.dockerignore - tells docker to ignore these files so they do not end up in a docker image
+
+One aspect of building images in layers is that if a previous layer was already built (prior build cycle)
+it will get cached and the build will not rebuild that layer (results in faster builds).
+
+
