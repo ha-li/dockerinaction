@@ -24,11 +24,13 @@ FROM - tells docker to start with this image as the base image. This must be the
           FROM scratch
 
 MAINTAINER - sets the maintainer name and email for the image being built 
+
 RUN - commands to run for creating the image, things like 
        apt-get update && apt-get install -y git
       by chaining together several commands you reduce the layers of the final image
-ENTRYPOINT - sets teh entrypoint to the image
-             there are 2 ways to set teh entry point, each has its nuances
+
+ENTRYPOINT - sets the entrypoint to the image
+             there are 2 ways to set the entry point, each has its nuances
                 1. ENTRYPOINT ["executable", "param1", "param2", ...] (exec way, preferred)
                 2. ENTRYPOINT command param1 param2 (shell form)
 
@@ -39,6 +41,12 @@ ENTRYPOINT - sets teh entrypoint to the image
 
             - the shell form will prevent CMD or run arguments from being used, 
                  but the value of ENTRYPOINT will be started as a subcommand of /bin/sh -c, so no signals will be passed
+
+CMD - used to start a process, is related to ENTRYPOINT
+    - has both a exec and shell format
+    - if ENTRYPOINT is set, the CMD is the argument list to the entrypoint command. The default entrypoint for a container
+      is /bin/sh. If no entrypoint is set the the values of CMD are passed to /bin/sh. If entrypoint is set and declared
+      in the exec form, then use CMD to set the default arguments.      
 
 ENV - sets environment variables for an image (similar to --env flag on docker run/create)
     - chain multiple environment variable settings together with && to keep the layer to 1, unless you want to set 2 layers
@@ -56,6 +64,30 @@ WORKDIR - sets the default working directory of the image/container
         - sets teh working directory for any RUN|CMD|ENTRYPOINT|COPY|ADD instruction that follows in the dockerfile.
         - if the WORKDIR does not exist, will create it
 
+COPY - copies files from the file system where the image is being built into the container.
+     - takes 2+ arguments, the last arg is the destination folder inside the container, 
+       all other args are source files/directories to copy into the destination inside the container.
+       All files/dir copied by COPY will have root ownership. This is regardless of the default user.
+       It is best practice to delay RUN instructions that change ownership until all files have
+       been copied to the image.
+ 
+       COPY will honor both exec and shell style arguments, but if the argument contains whitespace
+       use the exec form.
+          1. COPY ["param1", "param2", "dest"]
+          2. COPY <src1> <src2> <dest>
+
+ADD - operates similar to COPY, except 2 differences
+      ADD will - fetch source files if a URL is specified
+               - extract files if its an archive file
+          - the use of ADD to download is not a good practice since there is no way to clean up unused files and
+            results in additional layers
+          - the auto extract is the more useful
+      
+
+VOLUME - like the --volume flag, whill create each strin in the array as a new volume definition in the resulting layer.
+       - defining volumes in this way is more limiting than at runtime
+       - this will only create the defined location in the file system and then add a volume definition in the image metadata
+
 EXPOSE - opens a TCP port
 
 USER - sets the user and group for all further build sets and containers created from the image 
@@ -64,6 +96,29 @@ USER - sets the user and group for all further build sets and containers created
        would need to flip user back and forth, creating additional layers. Instead, the right pattern
        would be to create users/groups in base layer as part of RUN command, and then only
        set the default user in the top most docker file
+
+ONBUILD - defines instructions to execute if the resulting image is used as a base for another
+          image. eg use ONBUILD to compile a program that's provided by another downstream layer.
+
+           ONBUILD COPY [".", "/var/myapp"]
+           ONBUILD RUN go build /var/myapp
+           these instructions in the base (upstream) image will copy the contents of the build
+           directory into a known location and then compiles that in a downstream image
+          
+           the instructions of ONBUILD will not execute in the base image, but rather in
+           they are recorded in the resulting base image's meta data under ContainerConfig.OnBuild 
+           
+            ..."ContainerConfig" : {
+
+            ...     "OnBuild": [
+                       "COPY [\".\", \"/var/myapp\"]",
+                       "RUN go build /var/myapp"
+                    ],
+            ...
+
+           when this base image is used for another Dockerfil. When this downstream Dockerfile
+           uses the upstream image in a FROM statemement, the ONBUILD will execute immediately
+           after the FROM instruction.
 
 .dockerignore - tells docker to ignore these files so they do not end up in a docker image
 
